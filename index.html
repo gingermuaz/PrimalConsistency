@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Primal Consistency</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* OPTIONAL: If you have the web font files (e.g., eurostile-extended.woff2), 
+        uncomment this block and upload the font to your GitHub repository.
+        
+        @font-face {
+            font-family: 'Eurostile Bold Extended';
+            src: url('fonts/Eurostile-BoldExtended.woff2') format('woff2'),
+                 url('fonts/Eurostile-BoldExtended.woff') format('woff');
+            font-weight: bold;
+            font-style: normal;
+        }
+        */
+
+        :root {
+            --bg-color: #0d0d0d;
+            --surface-color: #1a1a1a;
+            --gold-accent: #c2a373;
+            --gold-hover: #a88b5d;
+            --text-main: #f0f0f0;
+            --text-muted: #999999;
+            /* Combined lookalikes as fallbacks if the client system lacks the font */
+            --heading-font: 'Eurostile Bold Extended', 'Eurostile Extended', 'Eurostile', 'Microgramma', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, .brand {
+            font-family: var(--heading-font);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px; /* Eurostile Extended is naturally wide, minor tracking fits well */
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2rem 5%;
+            background: rgba(13, 13, 13, 0.9);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #333;
+        }
+
+        .brand {
+            font-size: 1.6rem;
+            letter-spacing: 3px;
+            line-height: 1.1;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold-accent);
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 5%;
+            background: linear-gradient(to right, rgba(13,13,13,0.9) 40%, rgba(13,13,13,0.4)), url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop') center/cover;
+            margin-top: 60px;
+        }
+
+        .hero h1 {
+            font-size: 4rem; /* Adjusted slightly down as extended fonts take up more horizontal space */
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            max-width: 800px;
+        }
+
+        .hero h1 span {
+            color: var(--text-muted);
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+            letter-spacing: 4px;
+            color: var(--gold-accent);
+            margin-bottom: 2rem;
+        }
+
+        .hero p {
+            max-width: 450px;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            font-family: var(--heading-font);
+            text-transform: uppercase;
+            text-decoration: none;
+            letter-spacing: 1px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--gold-accent);
+            color: #000;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--gold-hover);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--text-muted);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--gold-accent);
+            color: var(--gold-accent);
+        }
+
+        /* --- CORE VALUES --- */
+        .values {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 2rem;
+            padding: 4rem 5%;
+            text-align: center;
+            border-bottom: 1px solid #333;
+        }
+
+        .value-item i {
+            font-size: 2rem;
+            color: var(--gold-accent);
+            margin-bottom: 1rem;
+        }
+
+        .value-item h3 {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 1px;
+        }
+
+        .value-item p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* --- PROGRAMS SECTION --- */
+        .programs {
+            padding: 5rem 5%;
+            text-align: center;
+        }
+
+        .section-header {
+            margin-bottom: 3rem;
+        }
+
+        .section-header p {
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .section-header h2 {
+            font-size: 2.2rem;
+            color: var(--text-main);
+            margin-top: 0.5rem;
+        }
+
+        .section-header h2 span {
+            color: var(--gold-accent);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            text-align: left;
+        }
+
+        .card {
+            background-color: var(--surface-color);
+            border: 1px solid #333;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--gold-accent);
+        }
+
+        .card-img {
+            height: 200px;
+            background-color: #222;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .card-content i {
+            color: var(--gold-accent);
+            margin-bottom: 1rem;
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .card a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card a:hover {
+            color: var(--gold-accent);
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            background-color: #050505;
+            padding: 4rem 5% 2rem;
+            border-top: 1px solid #333;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .newsletter input {
+            padding: 0.8rem;
+            background: transparent;
+            border: 1px solid #333;
+            color: white;
+            width: 250px;
+        }
+
+        .newsletter button {
+            padding: 0.8rem 1rem;
+            background: var(--gold-accent);
+            border: none;
+            cursor: pointer;
+        }
+
+        .bottom-bar {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            padding-top: 2rem;
+            border-top: 1px solid #222;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.8rem; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="brand">PRIMAL<br><span style="font-size: 0.65rem; color: #999; font-family: 'Inter', sans-serif; font-weight: normal; letter-spacing: 2px;">CONSISTENCY</span></div>
+        <ul class="nav-links">
+            <li><a href="#">HOME</a></li>
+            <li><a href="#">ABOUT</a></li>
+            <li><a href="#">PROGRAMS</a></li>
+            <li><a href="#">MENTORING</a></li>
+            <li><a href="#">CONTENT</a></li>
+            <li><a href="#">BLOG</a></li>
+            <li><a href="#">CONTACT</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <h1>DISCIPLINE<br><span>FUELS FREEDOM.</span></h1>
+        <div class="hero-subtitle">CONSISTENCY. PURPOSE. LEGACY.</div>
+        <p>Primal Consistency is more than a brand.<br>It's a system. A commitment to becoming who you're meant to be.</p>
+        <div class="btn-group">
+            <a href="#" class="btn btn-primary">Start Your Journey</a>
+            <a href="#" class="btn btn-outline">Learn More <i class="fas fa-chevron-right" style="font-size: 0.8em; margin-left: 5px;"></i></a>
+        </div>
+    </section>
+
+    <section class="values">
+        <div class="value-item">
+            <i class="fas fa-crosshairs"></i>
+            <h3>DISCIPLINE</h3>
+            <p>Do it daily. Even when you don't feel like it.</p>
+        </div>
+        <div class="value-item">
+            <i class="fas fa-leaf"></i>
+            <h3>CONSISTENCY</h3>
+            <p>Small actions. Big results. Every single day.</p>
+        </div>
+        <div class="value-item">
+            <i class="fas fa-mountain"></i>
+            <h3>GROWTH</h3>
+            <p>Mentally, physically, emotionally.</p>
+        </div>
+        <div class="value-item">
+            <i class="fas fa-crown"></i>
+            <h3>PURPOSE</h3>
+            <p>Live with meaning. Inspire others.</p>
+        </div>
+        <div class="value-item">
+            <i class="fas fa-shield-halved"></i>
+            <h3>LEGACY</h3>
+            <p>Build something that outlives you.</p>
+        </div>
+    </section>
+
+    <section class="programs">
+        <div class="section-header">
+            <p>Our Programs</p>
+            <h2>BUILT FOR <span>REAL LIFE.</span></h2>
+        </div>
+        
+        <div class="grid">
+            <div class="card">
+                <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=2070&auto=format&fit=crop');"></div>
+                <div class="card-content">
+                    <i class="fas fa-dumbbell"></i>
+                    <h3>FITNESS</h3>
+                    <p>Training plans, workouts & mindset coaching to build a strong body.</p>
+                    <a href="#">Learn More ></a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1490645935967-10de6ba17061?q=80&w=2053&auto=format&fit=crop');"></div>
+                <div class="card-content">
+                    <i class="fas fa-carrot"></i>
+                    <h3>NUTRITION</h3>
+                    <p>Simple, sustainable nutrition for energy, performance, and longevity.</p>
+                    <a href="#">Learn More ></a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1516961642265-531546e84af2?q=80&w=1974&auto=format&fit=crop');"></div>
+                <div class="card-content">
+                    <i class="fas fa-camera"></i>
+                    <h3>PHOTOGRAPHY</h3>
+                    <p>Capturing real moments. Street vibes. Visuals that inspire.</p>
+                    <a href="#">Learn More ></a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=2084&auto=format&fit=crop');"></div>
+                <div class="card-content">
+                    <i class="fas fa-users"></i>
+                    <h3>MENTORING</h3>
+                    <p>1-on-1 guidance for fitness, mindset, and creating purpose.</p>
+                    <a href="#">Learn More ></a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-img" style="background-image: url('https://images.unsplash.com/photo-1544716278-ca5e3f44da8c?q=80&w=1967&auto=format&fit=crop');"></div>
+                <div class="card-content">
+                    <i class="fas fa-book"></i>
+                    <h3>RESOURCES</h3>
+                    <p>Tools, guides, and systems to help you stay on track.</p>
+                    <a href="#">Learn More ></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="brand">PRIMAL<br><span style="font-size: 0.65rem; color: #999; font-family: 'Inter', sans-serif; font-weight: normal; letter-spacing: 2px;">CONSISTENCY</span></div>
+            <div class="newsletter">
+                <p style="font-size: 0.8rem; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;">Stay Consistent. Get Updates.</p>
+                <form onsubmit="event.preventDefault();">
+                    <input type="email" placeholder="Enter your email" required>
+                    <button type="submit"><i class="fas fa-chevron-right"></i></button>
+                </form>
+            </div>
+        </div>
+        <div class="bottom-bar">
+            <div>&copy; 2026 Primal Consistency. All rights reserved.</div>
+            <div style="display: flex; gap: 1rem; font-family: var(--heading-font); font-size: 0.75rem;">
+                <a href="#" style="color: #999; text-decoration: none;">ABOUT</a>
+                <a href="#" style="color: #999; text-decoration: none;">PROGRAMS</a>
+                <a href="#" style="color: #999; text-decoration: none;">CONTACT</a>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
